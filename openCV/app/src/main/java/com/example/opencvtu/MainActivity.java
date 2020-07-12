@@ -1,19 +1,16 @@
 package com.example.opencvtu;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvException;
@@ -40,12 +37,21 @@ public class MainActivity extends AppCompatActivity {
         convert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                card.setImageBitmap(processs(BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.adhar)));
+                card.setImageBitmap(processs(BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        R.drawable.adhar)));
+                getColorBitmap((BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                        R.drawable.adhar)));
             }
         });
-        
-        
+
+
     }
+
+
+    private void getColorBitmap(Bitmap decodeResource) {
+        new Abc().execute(decodeResource);
+    }
+
 
     private Bitmap processs(Bitmap bmpOriginal) {
 //        int width, height;
@@ -75,9 +81,29 @@ public class MainActivity extends AppCompatActivity {
 
             bmp = Bitmap.createBitmap(thresh.cols(), thresh.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(thresh, bmp);
+        } catch (CvException e) {
+            Log.d("Exception", e.getMessage());
         }
-        catch (CvException e){
-            Log.d("Exception",e.getMessage());}
         return bmp;
+    }
+
+
+    public class Abc extends AsyncTask<Bitmap, Void, String> {
+
+
+        @Override
+        protected String doInBackground(Bitmap... bitmaps) {
+            for (int x = 0; x < bitmaps[0].getWidth(); x++) {
+                for (int y = 0; y < bitmaps[0].getHeight(); y++) {
+                    bitmaps[0].getPixel(x, y);
+                    int a = Color.red(bitmaps[0].getPixel(x, y));
+                    int b = Color.blue(bitmaps[0].getPixel(x, y));
+                    int c = Color.green(bitmaps[0].getPixel(x, y));
+                    if (a == 255 && b == 255 && c == 255)
+                        Log.d("cdfdgb", "I am white");
+                }
+            }
+            return "defg";
+        }
     }
 }
